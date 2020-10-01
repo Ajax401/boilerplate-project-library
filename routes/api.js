@@ -18,8 +18,7 @@ const MONGODB_CONNECTION_STRING = process.env.DB;
 module.exports = function (app) {
 
 
-
-	mongoose.connect(MONGODB_CONNECTION_STRING, { useNewUrlParser: true, useUnifiedTopology: true,useFindAndModify: false });
+mongoose.connect(MONGODB_CONNECTION_STRING, { useNewUrlParser: true, useUnifiedTopology: true,useFindAndModify: false });
 
 	
 
@@ -27,7 +26,9 @@ module.exports = function (app) {
     .get(function (req, res){
       //response will be array of book objects
       //json res format: [{"_id": bookid, "title": book_title, "commentcount": num_of_comments },...]
-	  	  book.find({}).select("-comments").then(data =>                           res.send(data)
+     book.find({}).select("-comments")
+	     .then(data =>
+		   res.send(data)
      ).catch(err=> console.log(err))
     })
     
@@ -35,7 +36,7 @@ module.exports = function (app) {
       var title = req.body.title;
      console.log(title)//If empty string run if statement;
      if(!title){//checks whether variable has a value and not the key value.Tests for empty string(""),null,undefined,NaN,false and 0;
-				return res.status(200).json('No title in input field')
+		return res.status(200).json('No title in input field')
      }
 		
      book.exists({title:title}).then(lib =>{//exists method checks if title is in collection (single document).
@@ -80,13 +81,12 @@ module.exports = function (app) {
       var bookid = req.params.id;
       //json res format: {"_id": bookid, "title": book_title, "comments": [comment,comment,...]}
 			 book.findById({_id:bookid}).then(data => {
-         (data)?res.status(200).json({
-           _id:data._id,
-           title:data.title,
-           commeny:data.comment
-         }):res.status(200).json('no book exists')
-        
-       }).catch(err=> console.log(err))
+                          (data)?res.status(200).json({
+                           _id:data._id,
+                           title:data.title,
+                           commeny:data.comment
+                         }):res.status(200).json('no book exists')
+                        }).catch(err=> console.log(err))
     })
     
     .post(function(req, res){
@@ -110,9 +110,9 @@ module.exports = function (app) {
 				bookid,
 				(error, deletedBook) => {
 					if(!error && deletedBook){
-						return res.json('delete successful')
+					  return res.json('delete successful')
 					}else if(!deletedBook){
-						return res.json('no book exists')
+					  return res.json('no book exists')
 					}
 				}
 			)
